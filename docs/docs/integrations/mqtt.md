@@ -159,7 +159,8 @@ Published when a license plate is recognized on a car object. See the [License P
   "plate": "123ABC",
   "score": 0.95,
   "camera": "driveway_cam",
-  "timestamp": 1607123958.748393
+  "timestamp": 1607123958.748393,
+  "plate_box": [917, 487, 1029, 529] // box coordinates of the detected license plate in the frame
 }
 ```
 
@@ -428,6 +429,30 @@ Topic to adjust motion contour area for a camera. Expected value is an integer.
 ### `frigate/<camera_name>/motion_contour_area/state`
 
 Topic with current motion contour area for a camera. Published value is an integer.
+
+### `frigate/<camera_name>/motion_mask/<mask_name>/set`
+
+Topic to turn a specific motion mask for a camera on and off. Expected values are `ON` and `OFF`.
+
+### `frigate/<camera_name>/motion_mask/<mask_name>/state`
+
+Topic with current state of a specific motion mask for a camera. Published values are `ON` and `OFF`.
+
+### `frigate/<camera_name>/object_mask/<mask_name>/set`
+
+Topic to turn a specific object mask for a camera on and off. Expected values are `ON` and `OFF`.
+
+### `frigate/<camera_name>/object_mask/<mask_name>/state`
+
+Topic with current state of a specific object mask for a camera. Published values are `ON` and `OFF`.
+
+### `frigate/<camera_name>/zone/<zone_name>/set`
+
+Topic to turn a specific zone for a camera on and off. Expected values are `ON` and `OFF`.
+
+### `frigate/<camera_name>/zone/<zone_name>/state`
+
+Topic with current state of a specific zone for a camera. Published values are `ON` and `OFF`.
 
 ### `frigate/<camera_name>/review_status`
 

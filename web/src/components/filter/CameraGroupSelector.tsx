@@ -77,7 +77,6 @@ import { useStreamingSettings } from "@/context/streaming-settings-provider";
 import { Trans, useTranslation } from "react-i18next";
 import { CameraNameLabel } from "../camera/FriendlyNameLabel";
 import { useAllowedCameras } from "@/hooks/use-allowed-cameras";
-import { useHasFullCameraAccess } from "@/hooks/use-has-full-camera-access";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 import { useUserPersistedOverlayState } from "@/hooks/use-overlay-state";
 
@@ -678,7 +677,7 @@ export function CameraGroupEdit({
     );
 
   const allowedCameras = useAllowedCameras();
-  const hasFullCameraAccess = useHasFullCameraAccess();
+  const isAdmin = useIsAdmin();
 
   const [openCamera, setOpenCamera] = useState<string | null>();
 
@@ -867,7 +866,8 @@ export function CameraGroupEdit({
                 <FormDescription>{t("group.cameras.desc")}</FormDescription>
                 <FormMessage />
                 {[
-                  ...(birdseyeConfig?.enabled && hasFullCameraAccess
+                  ...(birdseyeConfig?.enabled &&
+                  (isAdmin || "birdseye" in allowedCameras)
                     ? ["birdseye"]
                     : []),
                   ...Object.keys(config?.cameras ?? {})

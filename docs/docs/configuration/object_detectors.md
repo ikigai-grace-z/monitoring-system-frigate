@@ -49,6 +49,11 @@ Frigate supports multiple different detectors that work on different types of ha
 
 - [Synaptics](#synaptics): synap models can run on Synaptics devices(e.g astra machina) with included NPUs.
 
+**AXERA** <CommunityBadge />
+
+- [AXEngine](#axera): axmodels can run on AXERA AI acceleration.
+
+
 **For Testing**
 
 - [CPU Detector (not recommended for actual use](#cpu-detector-not-recommended): Use a CPU to run tflite model, this is not recommended and in most cases OpenVINO can be used in CPU mode with better results.
@@ -161,7 +166,7 @@ YOLOv9 models that are compiled for TensorFlow Lite and properly quantized are s
 
 :::tip
 
-**Frigate+ Users:** Follow the [instructions](/integrations/plus#use-models) to set a model ID in your config file.
+**Frigate+ Users:** Follow the [instructions](../integrations/plus#use-models) to set a model ID in your config file.
 
 :::
 
@@ -572,7 +577,7 @@ $ docker run --device=/dev/kfd --device=/dev/dri  \
 
 When using Docker Compose:
 
-```yaml {4-6}
+```yaml
 services:
   frigate:
     ...
@@ -603,7 +608,7 @@ $ docker run -e HSA_OVERRIDE_GFX_VERSION=10.0.0 \
 
 When using Docker Compose:
 
-```yaml {4-5}
+```yaml
 services:
   frigate:
     ...
@@ -1476,6 +1481,41 @@ model:
   width: 300 # width is in the model name as the first number in the "int"x"int" section
   height: 300 # height is in the model name as the second number in the "int"x"int" section
   input_pixel_format: rgb/bgr # look at the model.json to figure out which to put here
+```
+
+## AXERA
+
+Hardware accelerated object detection is supported on the following SoCs:
+
+- AX650N
+- AX8850N
+
+This implementation uses the [AXera Pulsar2 Toolchain](https://huggingface.co/AXERA-TECH/Pulsar2).
+
+See the [installation docs](../frigate/installation.md#axera) for information on configuring the AXEngine hardware.
+
+### Configuration
+
+When configuring the AXEngine detector, you have to specify the model name.
+
+#### yolov9
+
+A yolov9 model is provided in the container at `/axmodels` and is used by this detector type by default.
+
+Use the model configuration shown below when using the axengine detector with the default axmodel:
+
+```yaml
+detectors:
+  axengine:
+    type: axengine
+
+model:
+  path: frigate-yolov9-tiny
+  model_type: yolo-generic
+  width: 320
+  height: 320
+  tensor_format: bgr
+  labelmap_path: /labelmap/coco-80.txt
 ```
 
 # Models

@@ -10,7 +10,6 @@ import CommunityBadge from '@site/src/components/CommunityBadge';
 It is highly recommended to use an integrated or discrete GPU for hardware acceleration video decoding in Frigate.
 
 Some types of hardware acceleration are detected and used automatically, but you may need to update your configuration to enable hardware accelerated decoding in ffmpeg. To verify that hardware acceleration is working:
-
 - Check the logs: A message will either say that hardware acceleration was automatically detected, or there will be a warning that no hardware acceleration was automatically detected
 - If hardware acceleration is specified in the config, verification can be done by ensuring the logs are free from errors. There is no CPU fallback for hardware acceleration.
 
@@ -68,7 +67,7 @@ Frigate can utilize most Intel integrated GPUs and Arc GPUs to accelerate video 
 
 :::note
 
-The default driver is `iHD`. You may need to change the driver to `i965` by adding the following environment variable `LIBVA_DRIVER_NAME=i965` to your docker-compose file or [in the `config.yml` for HA App users](advanced.md#environment_vars).
+The default driver is `iHD`. You may need to change the driver to `i965` by adding the following environment variable `LIBVA_DRIVER_NAME=i965` to your docker-compose file or [in the `config.yml` for HA Add-on users](advanced.md#environment_vars).
 
 See [The Intel Docs](https://www.intel.com/content/www/us/en/support/articles/000005505/processors.html) to figure out what generation your CPU is.
 
@@ -117,13 +116,12 @@ services:
   frigate:
     ...
     image: ghcr.io/blakeblackshear/frigate:stable
-    # highlight-next-line
     privileged: true
 ```
 
 ##### Docker Run CLI - Privileged
 
-```bash {4}
+```bash
 docker run -d \
   --name frigate \
   ...
@@ -137,7 +135,7 @@ Only recent versions of Docker support the `CAP_PERFMON` capability. You can tes
 
 ##### Docker Compose - CAP_PERFMON
 
-```yaml {5,6}
+```yaml
 services:
   frigate:
     ...
@@ -148,7 +146,7 @@ services:
 
 ##### Docker Run CLI - CAP_PERFMON
 
-```bash {4}
+```bash
 docker run -d \
   --name frigate \
   ...
@@ -190,7 +188,7 @@ Frigate can utilize modern AMD integrated GPUs and AMD GPUs to accelerate video 
 
 ### Configuring Radeon Driver
 
-You need to change the driver to `radeonsi` by adding the following environment variable `LIBVA_DRIVER_NAME=radeonsi` to your docker-compose file or [in the `config.yml` for HA App users](advanced.md#environment_vars).
+You need to change the driver to `radeonsi` by adding the following environment variable `LIBVA_DRIVER_NAME=radeonsi` to your docker-compose file or [in the `config.yml` for HA Add-on users](advanced.md#environment_vars).
 
 ### Via VAAPI
 
@@ -215,7 +213,7 @@ Additional configuration is needed for the Docker container to be able to access
 
 #### Docker Compose - Nvidia GPU
 
-```yaml {5-12}
+```yaml
 services:
   frigate:
     ...
@@ -232,7 +230,7 @@ services:
 
 #### Docker Run CLI - Nvidia GPU
 
-```bash {4}
+```bash
 docker run -d \
   --name frigate \
   ...
@@ -294,7 +292,7 @@ These instructions were originally based on the [Jellyfin documentation](https:/
 ## Raspberry Pi 3/4
 
 Ensure you increase the allocated RAM for your GPU to at least 128 (`raspi-config` > Performance Options > GPU Memory).
-If you are using the HA App, you may need to use the full access variant and turn off _Protection mode_ for hardware acceleration.
+If you are using the HA Add-on, you may need to use the full access variant and turn off _Protection mode_ for hardware acceleration.
 
 ```yaml
 # if you want to decode a h264 stream
@@ -311,7 +309,7 @@ ffmpeg:
 If running Frigate through Docker, you either need to run in privileged mode or
 map the `/dev/video*` devices to Frigate. With Docker Compose add:
 
-```yaml {4-5}
+```yaml
 services:
   frigate:
     ...
@@ -321,7 +319,7 @@ services:
 
 Or with `docker run`:
 
-```bash {4}
+```bash
 docker run -d \
   --name frigate \
   ...
@@ -353,7 +351,7 @@ You will need to use the image with the nvidia container runtime:
 
 ### Docker Run CLI - Jetson
 
-```bash {3}
+```bash
 docker run -d \
   ...
   --runtime nvidia
@@ -362,7 +360,7 @@ docker run -d \
 
 ### Docker Compose - Jetson
 
-```yaml {5}
+```yaml
 services:
   frigate:
     ...
@@ -453,14 +451,14 @@ Restarting ffmpeg...
 
 you should try to uprade to FFmpeg 7. This can be done using this config option:
 
-```yaml
+```
 ffmpeg:
   path: "7.0"
 ```
 
 You can set this option globally to use FFmpeg 7 for all cameras or on camera level to use it only for specific cameras. Do not confuse this option with:
 
-```yaml
+```
 cameras:
   name:
     ffmpeg:
@@ -482,7 +480,7 @@ Make sure to follow the [Synaptics specific installation instructions](/frigate/
 
 Add one of the following FFmpeg presets to your `config.yml` to enable hardware video processing:
 
-```yaml {2}
+```yaml
 ffmpeg:
   hwaccel_args: -c:v h264_v4l2m2m
   input_args: preset-rtsp-restream

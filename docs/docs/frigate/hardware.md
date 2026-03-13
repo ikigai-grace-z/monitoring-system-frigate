@@ -26,7 +26,7 @@ I may earn a small commission for my endorsement, recommendation, testimonial, o
 
 ## Server
 
-My current favorite is the Beelink EQ13 because of the efficient N100 CPU and dual NICs that allow you to setup a dedicated private network for your cameras where they can be blocked from accessing the internet. There are many used workstation options on eBay that work very well. Anything with an Intel CPU (with AVX + AVX2 instructions) and capable of running Debian should work fine. As a bonus, you may want to look for devices with a M.2 or PCIe express slot that is compatible with the Google Coral, Hailo, or other AI accelerators.
+My current favorite is the Beelink EQ13 because of the efficient N100 CPU and dual NICs that allow you to setup a dedicated private network for your cameras where they can be blocked from accessing the internet. There are many used workstation options on eBay that work very well. Anything with an Intel CPU and capable of running Debian should work fine. As a bonus, you may want to look for devices with a M.2 or PCIe express slot that is compatible with the Google Coral, Hailo, or other AI accelerators.
 
 Note that many of these mini PCs come with Windows pre-installed, and you will need to install Linux according to the [getting started guide](../guides/getting_started.md).
 
@@ -102,6 +102,10 @@ Frigate supports multiple different detectors that work on different types of ha
 **Synaptics** <CommunityBadge />
 
 - [Synaptics](#synaptics): synap models can run on Synaptics devices(e.g astra machina) with included NPUs to provide efficient object detection.
+
+**AXERA** <CommunityBadge />
+
+- [AXEngine](#axera): axera models can run on AXERA NPUs via AXEngine, delivering highly efficient object detection.
 
 :::
 
@@ -287,6 +291,14 @@ The inference time of a rk3588 with all 3 cores enabled is typically 25-30 ms fo
 | ------------- | ------------------------------- |
 | ssd mobilenet | ~ 25 ms                         |
 | yolov5m       | ~ 118 ms                        |
+
+### AXERA
+
+- **AXEngine** Default model is **yolov9**
+
+| Name             | AXERA AX650N/AX8850N Inference Time |
+| ---------------- | ----------------------------------- |
+| yolov9-tiny      | ~ 4 ms                              |
 
 ## What does Frigate use the CPU for and what does it use a detector for? (ELI5 Version)
 

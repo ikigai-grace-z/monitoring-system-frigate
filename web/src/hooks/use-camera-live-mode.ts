@@ -18,25 +18,18 @@ export default function useCameraLiveMode(
 
     const streamNames = new Set<string>();
     cameras.forEach((camera) => {
-      if (activeStreams && activeStreams[camera.name]) {
-        const selectedStreamName = activeStreams[camera.name];
-        const isRestreamed = Object.keys(config.go2rtc.streams || {}).includes(
-          selectedStreamName,
-        );
+      const isRestreamed = Object.keys(config.go2rtc.streams || {}).includes(
+        Object.values(camera.live.streams)[0],
+      );
 
-        if (isRestreamed) {
-          streamNames.add(selectedStreamName);
-        }
-      } else {
-        Object.values(camera.live.streams).forEach((streamName) => {
-          const isRestreamed = Object.keys(
-            config.go2rtc.streams || {},
-          ).includes(streamName);
-
-          if (isRestreamed) {
+      if (isRestreamed) {
+        if (activeStreams && activeStreams[camera.name]) {
+          streamNames.add(activeStreams[camera.name]);
+        } else {
+          Object.values(camera.live.streams).forEach((streamName) => {
             streamNames.add(streamName);
-          }
-        });
+          });
+        }
       }
     });
 
@@ -73,11 +66,11 @@ export default function useCameraLiveMode(
     } = {};
 
     cameras.forEach((camera) => {
-      const selectedStreamName =
-        activeStreams?.[camera.name] ?? Object.values(camera.live.streams)[0];
       const isRestreamed =
         config &&
-        Object.keys(config.go2rtc.streams || {}).includes(selectedStreamName);
+        Object.keys(config.go2rtc.streams || {}).includes(
+          Object.values(camera.live.streams)[0],
+        );
 
       newIsRestreamedStates[camera.name] = isRestreamed ?? false;
 
@@ -108,21 +101,14 @@ export default function useCameraLiveMode(
     setPreferredLiveModes(newPreferredLiveModes);
     setIsRestreamedStates(newIsRestreamedStates);
     setSupportsAudioOutputStates(newSupportsAudioOutputStates);
-  }, [activeStreams, cameras, config, windowVisible, streamMetadata]);
+  }, [cameras, config, windowVisible, streamMetadata]);
 
   const resetPreferredLiveMode = useCallback(
     (cameraName: string) => {
       const mseSupported =
         "MediaSource" in window || "ManagedMediaSource" in window;
-      const cameraConfig = cameras.find((camera) => camera.name === cameraName);
-      const selectedStreamName =
-        activeStreams?.[cameraName] ??
-        (cameraConfig
-          ? Object.values(cameraConfig.live.streams)[0]
-          : cameraName);
       const isRestreamed =
-        config &&
-        Object.keys(config.go2rtc.streams || {}).includes(selectedStreamName);
+        config && Object.keys(config.go2rtc.streams || {}).includes(cameraName);
 
       setPreferredLiveModes((prevModes) => {
         const newModes = { ...prevModes };
@@ -136,7 +122,7 @@ export default function useCameraLiveMode(
         return newModes;
       });
     },
-    [activeStreams, cameras, config],
+    [config],
   );
 
   return {

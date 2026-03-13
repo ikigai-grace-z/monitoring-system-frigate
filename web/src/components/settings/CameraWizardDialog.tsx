@@ -20,10 +20,7 @@ import type {
   CameraConfigData,
   ConfigSetBody,
 } from "@/types/cameraWizard";
-import {
-  processCameraName,
-  calculateDetectDimensions,
-} from "@/utils/cameraUtil";
+import { processCameraName } from "@/utils/cameraUtil";
 import { cn } from "@/lib/utils";
 
 type WizardState = {
@@ -205,25 +202,6 @@ export default function CameraWizardDialog({
           },
         },
       };
-
-      // Calculate detect dimensions from the detect stream's probed resolution
-      const detectStream = wizardData.streams.find((stream) =>
-        stream.roles.includes("detect"),
-      );
-      if (detectStream?.testResult?.resolution) {
-        const [streamWidth, streamHeight] = detectStream.testResult.resolution
-          .split("x")
-          .map(Number);
-        if (streamWidth > 0 && streamHeight > 0) {
-          const detectDimensions = calculateDetectDimensions(
-            streamWidth,
-            streamHeight,
-          );
-          if (detectDimensions) {
-            configData.cameras[finalCameraName].detect = detectDimensions;
-          }
-        }
-      }
 
       // Add live.streams configuration for go2rtc streams
       if (wizardData.streams && wizardData.streams.length > 0) {

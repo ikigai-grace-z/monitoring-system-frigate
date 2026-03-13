@@ -162,10 +162,6 @@ export type CameraConfigData = {
           input_args?: string;
         }[];
       };
-      detect?: {
-        width: number;
-        height: number;
-      };
       live?: {
         streams: Record<string, string>;
       };
