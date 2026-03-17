@@ -6,6 +6,8 @@ from typing import Dict
 
 from frigate.comms.events_updater import EventEndPublisher, EventUpdateSubscriber
 from frigate.config import FrigateConfig
+from frigate.config.classification import ObjectClassificationType
+from frigate.const import REPLAY_CAMERA_PREFIX
 from frigate.events.types import EventStateEnum, EventTypeEnum
 from frigate.models import Event
 from frigate.util.builtin import to_relative_box
@@ -15,6 +17,16 @@ logger = logging.getLogger(__name__)
 
 def should_update_db(prev_event: Event, current_event: Event) -> bool:
     """If current_event has updated fields and (clip or snapshot)."""
+    # If event is ending and was previously saved, always update to set end_time
+    # This ensures events are properly ended even when alerts/detections are disabled
+    # mid-event (which can cause has_clip/has_snapshot to become False)
+    if (
+        prev_event["end_time"] is None
+        and current_event["end_time"] is not None
+        and (prev_event["has_clip"] or prev_event["has_snapshot"])
+    ):
+        return True
+
     if current_event["has_clip"] or current_event["has_snapshot"]:
         # if this is the first time has_clip or has_snapshot turned true
         if not prev_event["has_clip"] and not prev_event["has_snapshot"]:
@@ -135,7 +147,9 @@ class EventProcessor(threading.Thread):
 
         if should_update_db(self.events_in_process[event_data["id"]], event_data):
             updated_db = True
-            camera_config = self.config.cameras[camera]
+            camera_config = self.config.cameras.get(camera)
+            if camera_config is None:
+                return
             width = camera_config.detect.width
             height = camera_config.detect.height
             first_detector = list(self.config.detectors.values())[0]
@@ -237,6 +251,18 @@ class EventProcessor(threading.Thread):
                     "recognized_license_plate"
                 ][1]
 
+            # only overwrite attribute-type custom model fields in the database if they're set
+            for name, model_config in self.config.classification.custom.items():
+                if (
+                    model_config.object_config
+                    and model_config.object_config.classification_type
+                    == ObjectClassificationType.attribute
+                ):
+                    value = event_data.get(name)
+                    if value is not None:
+                        event[Event.data][name] = value[0]
+                        event[Event.data][f"{name}_score"] = value[1]
+
             (
                 Event.insert(event)
                 .on_conflict(
@@ -260,6 +286,10 @@ class EventProcessor(threading.Thread):
     def handle_external_detection(
         self, event_type: EventStateEnum, event_data: Event
     ) -> None:
+        # Skip replay cameras
+        if event_data.get("camera", "").startswith(REPLAY_CAMERA_PREFIX):
+            return
+
         if event_type == EventStateEnum.start:
             event = {
                 Event.id: event_data["id"],
