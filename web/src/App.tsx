@@ -29,7 +29,7 @@ const Classification = lazy(() => import("@/pages/ClassificationModel"));
 const Chat = lazy(() => import("@/pages/Chat"));
 const Logs = lazy(() => import("@/pages/Logs"));
 const AccessDenied = lazy(() => import("@/pages/AccessDenied"));
-const StreamConfig = lazy(() => import("@/pages/streamConfig"));
+const StreamConfig = lazy(() => import("@/pages/StreamConfig"));
 const Replay = lazy(() => import("@/pages/Replay"));
 
 function App() {
